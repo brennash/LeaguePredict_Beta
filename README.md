@@ -1,15 +1,15 @@
 # LeaguePredict
-Predicts the outcome of a various football league games, input as a series of individual games in a CSV format. 
-The application basically performs a couple of tasks, 
+LeaguePredict is an application which models various parameters in order to predict the likelihood of a 
+home win, based on a large number of games from a variety of European football leagues. The basic operation 
+of LeaguePredict is to take in a CSV file providing results for a particular league, generate a number 
+of team/league based metrics, and use these in a logistic regression model to predict the liklihood of 
+future home wins. 
 
-* Reads in results data from a CSV file for a particular league
-* Generates the league table and a number of team-specific metrics 
-* Builds and trains a model on this data
-* Uses the next set of team/league data to generate an evaluation feature set
-* Performs an evaluation on this feature set
+# How it works
+Basically the application works in three steps,
 
-# Development
-This application was the result of a long period of on-and-off development work. In fact, most people who've 
-heard about it are probably sick of me yakking on about it at this stage. It was developed to test the concept 
-of automatic market prediction (i.e., arbitrage) using real-time betting markets. However, the results of the 
-model itself were good enough to make reasonable predictions in themselves before the match kicked off. 
+1. Create the set of features for each league data set provided.
+2. Build a predictive model based on these features
+3. Use this model to predict a number of evaluation fixtures. 
+
+
