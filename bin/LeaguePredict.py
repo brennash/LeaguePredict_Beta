@@ -9,7 +9,7 @@ import sys
 import os
 import json
 import logging
-from leaguepredict.features.Features import Features
+from leaguepredict.features.FeatureSet import FeatureSet
 from optparse import OptionParser
 
 def main(argv):
@@ -53,14 +53,14 @@ def main(argv):
 		configDict = json.loads(open(filename[0]).read())
 
 		# Initialise the feature set with the specified name
-		trainingFeatures = getFeatures('training-data', configDict)
-		evaluationFeatures = getFeatures('evaluation-data', configDict)
+		trainingFeatureSet = getFeatureSet('training-data', configDict)
+		evaluationFeatureSet = getFeatureSet('evaluation-data', configDict)
 		
 	except ValueError:
 		print 'Error - invalid JSON config provided.'
 
 
-def getFeatures(jsonHeader, configDict):
+def getFeatureSet(jsonHeader, configDict):
 	""" Gets the list of features associated with each provided 
 		data file. Takes as input the jsonHeader ('training-data'|'evaluation-data') as
 		well as the dict representing the JSON configuration.
@@ -71,7 +71,7 @@ def getFeatures(jsonHeader, configDict):
 	logger = logging.getLogger('LeaguePredict')
 
 	# The features list for each input file
-	featuresList = []
+	resultSet = FeatureSet()
 		
 	if jsonHeader != 'training-data' and jsonHeader != 'evaluation-data':
 		logger.error('%s','GetFeatures() needs to specity training-data or evaluation-data')
@@ -89,13 +89,14 @@ def getFeatures(jsonHeader, configDict):
 		if os.path.exists(path) and os.path.isfile(path):
 			# Take each JSON file as input and parse it to create features
 			logger.info('Reading from CSV data (%s), %s', jsonHeader, path)
-			features = Features(path)
-			featuresList = featuresList + features.getFeaturesList()
+			featureSet = FeatureSet()
+			featureSet.addFeatures(path)
+			resultSet.append(featureSet)
 		else:
 			logger.error('Cannot read from file %s', path)
 			
-	logger.info('Total %s is %d',jsonHeader, len(featuresList))
-	return featuresList
+	logger.info('Total %s is %d',jsonHeader, resultSet.size())
+	return resultSet
 
 
 if __name__ == "__main__":

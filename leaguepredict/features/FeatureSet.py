@@ -5,13 +5,17 @@ import logging
 import os
 from leaguepredict.data.League import League
 from leaguepredict.data.Fixture import Fixture
+from leaguepredict.features.Features import Features
 
 class FeatureSet:
 
 	def __init__(self):
 		self.logger = logging.getLogger('LeaguePredict')
+	
+		# The list of Features objects
 		self.featuresList = []
-		
+	
+	
 	def addFeatures(self, filename):
 		self.logger = logging.getLogger('LeaguePredict')
 
@@ -76,11 +80,8 @@ class FeatureSet:
 		numFixtures = 0
 		for fixture in fixturesList:
 			if league.hasMinGames():
-				# get the features
-				fixtureFeatures = self.getFixtureFeatures(league, fixture)
-				self.featuresList.append(fixtureFeatures)
-				
-				# Update the league with the fixture
+				features = Features(league, fixture)
+				self.featuresList.append(features)
 				league.addFixture(fixture)
 			else:
 				league.addFixture(fixture)
@@ -88,12 +89,6 @@ class FeatureSet:
 
 		self.logger.info('Initialized Season %s, League %s with %d fixtures',seasonCode, leagueCode, numFixtures)
 	
-	def getFixtureFeatures(self, league, fixture):
-		fixtureFeatures = []
-		features = Features()
-		features.addFeatures(league, fixture)
-		return features
-		
 	def getFeaturesList(self):
 		""" Returns the instantiated list of features for the 
 			Features object.
