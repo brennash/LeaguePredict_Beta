@@ -6,10 +6,21 @@ of team/league based metrics, and use these in a logistic regression model to pr
 future home wins. 
 
 # How it works
-Basically the application works in three steps,
+Basically the application works as follows,
 
-1. Create the set of features for each league data set provided.
-2. Build a predictive model based on these features
-3. Use this model to predict a number of evaluation fixtures. 
+1. Read in some fixture data into training and evaluation datasets.
+2. Create a set of features from each dataset.  
+3. Build a predictive model based on the training dataset features
+4. Evaluate the model on the evaluation dataset features. 
 
+## What does it predict
+The application predicts the likelihood of a home win for a given set of fixtures, in other words, the 
+(rough) probability of the home team winning, given a set of historic performance metrics and league metrics. 
+The reason home wins were selected is due to the inherent home advantage bias teams tend to have, which 
+tends to widen the gap between good and bad teams performances. 
 
+## What additional work needs to be done
+Some kindly soul could take this codebase and augment it with a number of additional features as well as 
+improve the ML libraries used to predict home wins. A couple of nice features immediately come to mind, 
+
+* Calculating the distance teams have to travel to an away game as a feature. 
