@@ -39,6 +39,7 @@ class FeatureSet:
 		fixtureData = None
 		fixturesList = []
 		
+		# Open and read the CSV fixtures file
 		reader = csv.reader(open(filename,"rb"))
 		for row in reader:
 			if lineNum == 0:
@@ -49,6 +50,7 @@ class FeatureSet:
 				fixturesList.append(fixture)
 			lineNum += 1
 			
+		# Return the list of the fixtures in the CSV file
 		self.logger.info('Read %d fixtures from %s (%d lines)',len(fixturesList), filename, lineNum)
 		return fixturesList
 							
