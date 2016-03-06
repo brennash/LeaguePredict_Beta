@@ -1,0 +1,17 @@
+{
+	"model":"Standard LeaguePredict Model",
+	"training-data":
+	[
+		{"file":"data/0908/E0.csv"},
+		{"file":"data/1009/E0.csv"},
+		{"file":"data/1110/E0.csv"},
+		{"file":"data/1211/E0.csv"},
+		{"file":"data/1312/E0.csv"},
+		{"file":"data/1413/E0.csv"},
+		{"file":"data/1514/E0.csv"}
+	],
+	"evaluation-data":
+	[
+		{"file":"data/1615/E0.csv"}
+	]
+}
