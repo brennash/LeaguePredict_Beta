@@ -15,29 +15,12 @@ class FeatureSet:
 		# The list of Features objects
 		self.featuresList = []
 	
-	
 	def addFeatures(self, filename):
+		""" Adds features from a specified filename.
+		"""
 		self.logger = logging.getLogger('LeaguePredict')
 
 		# Read the CSV fixtures
-		fixturesList = self.readFixturesCSV(filename)
-
-		# Initialise the features list
-		self.setFeatures(fixturesList, filename)
-
-	def append(self, featureSet):
-		""" Adds another featureSet to this one, i.e., appends
-			the list of features in the other featureSet to the 
-			list of features in this one. Used to concatenate 
-			multiple featureSets.
-		"""
-		otherFeaturesList = featureSet.getFeaturesList()
-		self.featuresList = self.featuresList + otherFeaturesList
-	
-	def readFixturesCSV(self, filename):
-		""" Loads the specified CSV file, and extracts the data as
-			fixtures, which are then returned as a list of Fixture objects.
-		"""
 		lineNum = 0
 		header = None
 		fixtureData = None
@@ -53,10 +36,21 @@ class FeatureSet:
 				fixture = Fixture(header, fixtureData)
 				fixturesList.append(fixture)
 			lineNum += 1
-			
+		
 		# Return the list of the fixtures in the CSV file
 		self.logger.info('Read %d fixtures from %s (%d lines)',len(fixturesList), filename, lineNum)
-		return fixturesList
+
+		# Initialise the features list
+		self.setFeatures(fixturesList, filename)
+
+	def append(self, featureSet):
+		""" Adds another featureSet to this one, i.e., appends
+			the list of features in the other featureSet to the 
+			list of features in this one. Used to concatenate 
+			multiple featureSets.
+		"""
+		otherFeaturesList = featureSet.getFeaturesList()
+		self.featuresList = self.featuresList + otherFeaturesList
 							
 	def getFileDetails(self, filePath):
 		""" Gets the file list and parses it to 
@@ -88,13 +82,24 @@ class FeatureSet:
 			numFixtures += 1
 
 		self.logger.info('Initialized Season %s, League %s with %d fixtures',seasonCode, leagueCode, numFixtures)
-	
-	def getFeaturesList(self):
-		""" Returns the instantiated list of features for the 
-			Features object.
-		"""
-		return self.featuresList
 		
+	def getFeaturesData(self):
+		""" Returns the features data as a list of lists.
+		"""
+		resultList = []
+		for feature in self.featuresList:
+			featureData = feature.getFeatureData()
+			resultList.append(featureData)
+		return list(resultList)
+	
+	def getFeaturesHeader(self):
+		if len(self.featuresList) > 0:
+			header = self.featuresList[0].getHeader()
+			return header
+		else:
+			self.logger.error('No FeaturesList initialized, can\'t create header')
+			return None
+	
 	def size(self):
 		""" Returns the number of features in the featureSet.
 		"""

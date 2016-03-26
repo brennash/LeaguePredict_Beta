@@ -10,27 +10,23 @@ import os
 import json
 import logging
 from leaguepredict.features.FeatureSet import FeatureSet
+from leaguepredict.model.LeaguePredictModel import LeaguePredictModel
+from leaguepredict.evaluation.ModelEvaluation import ModelEvaluation
+
 from optparse import OptionParser
 
+# Set the log details
+logger = logging.getLogger('LeaguePredict')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('log/leaguepredict.log')
+handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 def main(argv):
-
-	# Set the log details
-	logger = logging.getLogger('LeaguePredict')
-	logger.setLevel(logging.INFO)
-	handler = logging.FileHandler('log/leaguepredict.log')
-	handler.setLevel(logging.INFO)
-	formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-	handler.setFormatter(formatter)
-	logger.addHandler(handler)
-	logger.info('Starting LeaguePredict in %s', os.getcwd())
-
 	# Set the input parameters
 	parser = OptionParser(usage="Usage: runLeaguePredict <config-json>")
-	parser.add_option("-v", "--verbose",
-		action="store_true", 
-		dest="verbose",
-		default=False,
- 		help="verbose output")
 	(options, filename) = parser.parse_args()
 
 	# Check a single config file is included
@@ -51,30 +47,38 @@ def main(argv):
 	try:
 		logger.info('Reading JSON Config filename %s',filename[0])		
 		configDict = json.loads(open(filename[0]).read())
-
-		# Initialise the feature set with the specified name
-		trainingFeatureSet = getFeatureSet('training-data', configDict)
-		evaluationFeatureSet = getFeatureSet('evaluation-data', configDict)
-		
 	except ValueError:
 		print 'Error - invalid JSON config provided.'
+		logger.error('Invalid JSON config provided in %s',filename[0])
+		exit(1)
+		
+	# Now the main part of the simulation
+	# 1. Get the training and evaluation features
+	trainingFeatureSet = getFeatureSet('training-data', configDict)
+	evaluationFeatureSet = getFeatureSet('evaluation-data', configDict)
+	logger.error('Training Features: %d',trainingFeatureSet.size())
+
+	# 2. Build a model with the training features only
+	model = LeaguePredictModel(trainingFeatureSet)
+	
+	# 3. Evaluate the performance of the model
+	logger.error('Evaluation Features: %d',evaluationFeatureSet.size())
+	evaluation = ModelEvaluation(model, evaluationFeatureSet)
+	evaluation.printSummary()
+		
 
 
 def getFeatureSet(jsonHeader, configDict):
-	""" Gets the list of features associated with each provided 
-		data file. Takes as input the jsonHeader ('training-data'|'evaluation-data') as
-		well as the dict representing the JSON configuration.
-		
-		Outputs a list of features, one per each input line. 
+	""" Gets the list of features associated with each provided data file. Takes as 
+		input the jsonHeader ('training-data'|'evaluation-data') as well as the dict 
+		representing the JSON configuration. Outputs a list of features, 
+		one per each input line. 
 	"""
-
-	logger = logging.getLogger('LeaguePredict')
-
 	# The features list for each input file
 	resultSet = FeatureSet()
 		
 	if jsonHeader != 'training-data' and jsonHeader != 'evaluation-data':
-		logger.error('%s','GetFeatures() needs to specity training-data or evaluation-data')
+		logger.error('%s','GetFeatures() needs to specify training-data or evaluation-data')
 		return None
 		
 	parentDir = os.getcwd()
@@ -94,8 +98,6 @@ def getFeatureSet(jsonHeader, configDict):
 			resultSet.append(featureSet)
 		else:
 			logger.error('Cannot read from file %s', path)
-			
-	logger.info('Total %s is %d',jsonHeader, resultSet.size())
 	return resultSet
 
 
