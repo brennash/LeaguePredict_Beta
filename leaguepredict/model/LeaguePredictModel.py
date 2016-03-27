@@ -28,41 +28,25 @@ import pandas
 class LeaguePredictModel :
 
 	def __init__(self, inputFeatures) : 
-		self.model, self.pca = self.fitLogisticRegressionModel(inputFeatures)
+		self.model = self.fitLogisticRegressionModel(inputFeatures)
 
 	def getModel(self):
-		return self.model, self.pca
+		return self.model
 
 	def fitLogisticRegressionModel(self, featureSet):
 		featureList = featureSet.getFeaturesData()
-
-		for row in featureList:
-			print row
-
-		validCols = featureSet.getFeaturesHeader()
-		trainingData = pandas.DataFrame(featureList, columns=validCols)
-		
-		print trainingData
-		
-		trainingData.columns = validCols
-		
+		header = featureSet.getHeader()
+		validCols = featureSet.getValidCols(homeResult=True)
+		trainingData = pandas.DataFrame(featureList, columns=header)
 		trainingResults = trainingData['homeResult'].tolist()
 		model = linear_model.LogisticRegression(C=1e5)
-		pca = decomposition.PCA(n_components=3)
-		pca.fit(trainingData[validCols])
-		trainingPCA = pca.transform(trainingData[validCols])
-	
-		model = model.fit(trainingPCA, trainingResults)
-#		predictions = model.predict(evaluationPCA)
-#		probabilities = model.predict_proba(evaluationPCA)
+		#pca = decomposition.PCA(n_components=10)
+		#pca.fit(trainingData[validCols])
+		#trainingPCA = pca.transform(trainingData[validCols])
+		model = model.fit(trainingData[validCols], trainingResults)
 
-#		worstOddsList = evaluationData['Home_WorstOdds'].tolist()
-#		bestOddsList = evaluationData['Home_BestOdds'].tolist()
-#		results = evaluationData['homeResult'].tolist()
-
-#		print model
-
-		return model, pca
+		#model = model.fit(trainingPCA, trainingResults)
+		return model
 
 	def fitNaiveBayesModel(self, featuresData):
 		bestModel = None

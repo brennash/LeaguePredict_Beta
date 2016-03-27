@@ -43,6 +43,12 @@ class FeatureSet:
 		# Initialise the features list
 		self.setFeatures(fixturesList, filename)
 
+	def getFeaturesList(self):
+		""" Returns the list of features objects, allowing FeatureSets 
+			to append multiple lists of features. 
+		"""
+		return self.featuresList
+
 	def append(self, featureSet):
 		""" Adds another featureSet to this one, i.e., appends
 			the list of features in the other featureSet to the 
@@ -51,6 +57,7 @@ class FeatureSet:
 		"""
 		otherFeaturesList = featureSet.getFeaturesList()
 		self.featuresList = self.featuresList + otherFeaturesList
+		self.logger.info('Adding to FeatureSet, size: %d',len(self.featuresList))
 							
 	def getFileDetails(self, filePath):
 		""" Gets the file list and parses it to 
@@ -87,19 +94,25 @@ class FeatureSet:
 		""" Returns the features data as a list of lists.
 		"""
 		resultList = []
-		for feature in self.featuresList:
+		for index, feature in enumerate(self.featuresList):
 			featureData = feature.getFeatureData()
 			resultList.append(featureData)
 		return list(resultList)
-	
-	def getFeaturesHeader(self):
+
+	def getHeader(self):
 		if len(self.featuresList) > 0:
-			header = self.featuresList[0].getHeader()
-			return header
+			return self.featuresList[0].getHeader()
 		else:
-			self.logger.error('No FeaturesList initialized, can\'t create header')
 			return None
-	
+
+	def getValidCols(self, homeResult=True):
+		""" Returns the valid columns considered as part of a model. 
+			If the homeResult variable is set, or ignored then features
+			associated with a home win are returned. If the variable is 
+			set to False, it returns features associated with an away win. 
+		"""
+		return self.featuresList[0].getValidCols(homeResult)
+			
 	def size(self):
 		""" Returns the number of features in the featureSet.
 		"""

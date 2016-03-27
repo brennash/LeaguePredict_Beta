@@ -56,15 +56,17 @@ def main(argv):
 	# 1. Get the training and evaluation features
 	trainingFeatureSet = getFeatureSet('training-data', configDict)
 	evaluationFeatureSet = getFeatureSet('evaluation-data', configDict)
-	logger.error('Training Features: %d',trainingFeatureSet.size())
+	logger.info('Training Features: %d',trainingFeatureSet.size())
+	logger.info('Evaluation Features: %d',evaluationFeatureSet.size())
 
 	# 2. Build a model with the training features only
-	model = LeaguePredictModel(trainingFeatureSet)
+	leaguePredictModel = LeaguePredictModel(trainingFeatureSet)
+	model = leaguePredictModel.getModel()
 	
 	# 3. Evaluate the performance of the model
 	logger.error('Evaluation Features: %d',evaluationFeatureSet.size())
 	evaluation = ModelEvaluation(model, evaluationFeatureSet)
-	evaluation.printSummary()
+#	evaluation.printSummary()
 		
 
 
