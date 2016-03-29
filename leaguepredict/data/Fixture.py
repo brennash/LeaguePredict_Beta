@@ -1,4 +1,5 @@
 import re
+import datetime
 
 class Fixture :
 
@@ -9,23 +10,23 @@ class Fixture :
 		self.validShots = True
 		self.validOdds = True
 		self.validFixture = True
-
+		self.fixtureString = values
+	
 		try:
 			self.fixture['leagueCode'] = self.getString("Div", header, values)
 			self.fixture['seasonCode'] = self.extractSeasonCode("Date", header, values)
-			self.fixture['date'] = self.getDateString("Date", header, values)
-
-			self.fixture['homeTeam'] = self.getString("HomeTeam", header, values)
-			self.fixture['awayTeam'] = self.getString("AwayTeam", header, values)
+			self.fixture['homeTeam']   = self.getString("HomeTeam", header, values)
+			self.fixture['awayTeam']   = self.getString("AwayTeam", header, values)
+			self.fixture['date']       = self.parseDateString("Date", header, values)
 		except:
 			self.validFixture = False
 
 		try:
-			self.fixture['homeFT'] = self.getInt("FTHG", header, values)
-			self.fixture['awayFT'] = self.getInt("FTAG", header, values)
+			self.fixture['homeFT']   = self.getInt("FTHG", header, values)
+			self.fixture['awayFT']   = self.getInt("FTAG", header, values)
 			self.fixture['resultFT'] = self.getString("FTR", header, values)
-			self.fixture['homeHT'] = self.getInt("HTHG", header, values)
-			self.fixture['awayHT'] = self.getInt("HTAG", header, values)
+			self.fixture['homeHT']   = self.getInt("HTHG", header, values)
+			self.fixture['awayHT']   = self.getInt("HTAG", header, values)
 			self.fixture['resultHT'] = self.getString("HTR", header, values)
 		except:
 			self.fixture['homeFT'] = -1
@@ -63,6 +64,9 @@ class Fixture :
 	def isValid(self):
 		return self.validFixture
 
+	def toString(self):
+		return self.fixtureString
+
 	def hasScore(self):
 		return self.validScore
 
@@ -81,7 +85,7 @@ class Fixture :
 	def getString(self, key, header, values):
 		try:
 			indexPos = header.index(key)
-			return values[indexPos]
+			return values[indexPos].rstrip()
 		except:
 			raise
 
@@ -125,7 +129,7 @@ class Fixture :
 		except:
 			return 0.0
 
-	def getDateString(self, key, header, values):
+	def parseDateString(self, key, header, values):
 		try:
 			indexPos = header.index(key)
 			dateValue = values[indexPos]
@@ -212,11 +216,19 @@ class Fixture :
 	def getSeasonCode(self):
 		return self.fixture['seasonCode']
 
-	def getDate(self):
+	def getDateString(self):
 		return self.fixture['date']
 
+	def getDate(self):
+		dateString = self.fixture['date']
+		return datetime.datetime.strptime(dateString, '%d/%m/%y')
+
 	def getHomeTeam(self):
-		return self.fixture['homeTeam']
+		try:
+			return self.fixture['homeTeam']
+		except KeyError:
+			print 'HOME TEAM KEY ERROR'
+			
 
 	def getAwayTeam(self):
 		return self.fixture['awayTeam']

@@ -1,5 +1,6 @@
 import re
 import collections
+import datetime
 from leaguepredict.data.League import League
 from leaguepredict.data.Fixture import Fixture
 
@@ -15,6 +16,13 @@ class Features :
 	
 		homeTeam = league.getTeam(fixture.getHomeTeam())
 		awayTeam = league.getTeam(fixture.getAwayTeam())
+		
+		if homeTeam is None:
+			print homeTeam, 'home team is none'
+		elif awayTeam is None:
+			print awayTeam, 'away team is none'
+			print fixture.toString()
+		
 		homeTeamName = homeTeam.getTeamName()
 		awayTeamName = awayTeam.getTeamName()
 
@@ -27,7 +35,7 @@ class Features :
 		# The information on the feature
 		self.addFeatureElement('leagueCode', self.leagueCode)
 		self.addFeatureElement('seasonCode', self.seasonCode)
-		self.addFeatureElement('date', fixture.getDate())
+		self.addFeatureElement('date', fixture.getDateString())
 		self.addFeatureElement('homeTeam', fixture.getHomeTeam())
 		self.addFeatureElement('awayTeam', fixture.getAwayTeam())
 		self.addFeatureElement('homeFT', fixture.getHomeFT())
@@ -53,8 +61,8 @@ class Features :
 
 		self.addFeatureElement('probWin', probWin)
 		self.addFeatureElement('probLoss', probLoss)
-		self.addFeatureElement('probHomeWin', probWin)
-		self.addFeatureElement('probHomeLoss', probLoss)
+		self.addFeatureElement('probHomeWin', probHomeWin)
+		self.addFeatureElement('probHomeLoss', probHomeLoss)
 		self.addFeatureElement('probClearWin', probClearWin)
 		self.addFeatureElement('probClearLoss', probClearLoss)
 		self.addFeatureElement('homeShots', homeShots)
@@ -71,7 +79,7 @@ class Features :
 		self.addFeatureMask('awayResult')			
 		self.addFeatureMask('leagueCode')
 		self.addFeatureMask('seasonCode')
-		self.addFeatureMask('date')		
+		self.addFeatureMask('date')
 		self.addFeatureMask('homeTeam')
 		self.addFeatureMask('awayTeam')
 		self.addFeatureMask('homeFT')
@@ -139,16 +147,13 @@ class Features :
 				return 1.0
 			return 0.0
 		return -1.0	
-
-	def getFeatureData(self, mask=False):
-		""" If you set the mask to False, only the relevant
-			data will be returned. If True the data that's been 
-			masked out will be returned. 
-		"""		
-		valueList = []
-		for key, value in self.dict.items():
-				valueList.append(value)
-		return valueList
+	
+	def getDate(self):
+		try:
+			dateString = self.dict['date']
+			return datetime.datetime.strptime(dateString, '%d/%m/%y')
+		except:
+			return None		
 	
 	def getHeader(self):
 		""" Returns all the headers for the entire set of 
@@ -168,3 +173,13 @@ class Features :
 			if self.mask[key] == False:
 				keyList.append(key)
 		return keyList
+	
+	def getFeatureData(self):
+		""" If you set the mask to False, only the relevant
+			data will be returned. If True the data that's been 
+			masked out will be returned. 
+		"""		
+		valueList = []
+		for key, value in self.dict.items():
+				valueList.append(value)
+		return valueList

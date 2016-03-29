@@ -4,6 +4,7 @@ import logging
 import json
 import time
 import pickle
+import datetime
 import random
 import pandas
 import statsmodels.api as sm
@@ -26,39 +27,76 @@ from leaguepredict.model.LeaguePredictModel import LeaguePredictModel
 
 class ModelEvaluation:
 
-	def __init__(self, model, featureSet): 
+
+	def __init__(self, model, featureSet, config): 
 		featureList = featureSet.getFeaturesData()
-		header = featureSet.getHeader()
-		validCols = featureSet.getValidCols(homeResult=True)
-		
+		header = featureSet.getHeader()		
 		evaluationData = pandas.DataFrame(featureList, columns=header)
-		evaluationResults = evaluationData['homeResult'].tolist()
-		# evaluationPCA = pca.transform(evaluationData[validCols])
-		predictions = model.predict(evaluationData[validCols])
-		thresholds = model.predict_proba(evaluationData[validCols])
-
-		worstOddsList = evaluationData['worstHomeOdds'].tolist()
-		bestOddsList = evaluationData['bestHomeOdds'].tolist()
-
-		right = 0.0
-		wrong = 0.0
-		totalBest = 0.0
-		totalWorst = 0.0
 		
-		for index, prediction in enumerate(predictions):
-			threshold = thresholds[index][1]
-			print prediction, threshold, evaluationResults[index], worstOddsList[index]
-			if prediction == 1.0 and prediction == 1.0:
-				right += 1.0
-				totalBest += (bestOddsList[index] - 1.0)
-				totalWorst += (worstOddsList[index] - 1.0)
-			elif prediction == 1.0 and prediction != 1.0:
-				wrong += 1.0
-				totalBest -= 1.0
-				totalWorst -= 1.0
+		evalutionConfig = config['evaluation-config']
+		self.verbose = evalutionConfig['verbose']
+		self.singleThreshold = evalutionConfig['single-threshold']
+		self.accumThreshold = evalutionConfig['accumulator-threshold']
 		
-		print validCols
-		print (right+wrong), right/(right+wrong), wrong/(right+wrong), totalBest, totalWorst
+		validCols = featureSet.getValidCols(homeResult=True)
+		self.evaluationResults = evaluationData['homeResult'].tolist()
 
+		self.fixtureDate = evaluationData['date'].tolist()
+		self.homeTeam = evaluationData['homeTeam'].tolist()
+		self.awayTeam = evaluationData['awayTeam'].tolist()
+		self.homeFT = evaluationData['homeFT'].tolist()
+		self.awayFT = evaluationData['awayFT'].tolist()
+				
+		self.predictions = model.predict(evaluationData[validCols])
+		self.thresholds = model.predict_proba(evaluationData[validCols])
+		self.worstOddsList = evaluationData['worstHomeOdds'].tolist()
+		self.bestOddsList = evaluationData['bestHomeOdds'].tolist()
 
+	def printSummary(self):
+		""" Print the summary for the evaluation metrics.
+		"""
+		totalWins      = [0.0, 0.0]
+		totalLosses    = [0.0, 0.0]
+		totalIgnored   = [0.0, 0.0]
+		totalBestGain  = [0.0, 0.0]
+		totalWorstGain = [0.0, 0.0]
+		totalBets      = [0.0, 0.0]
+	
+		# The previous date, initialized to an early date
+		prevDate = datetime.datetime(1990,1,1,0,0,0)
+		
+		for index, result in enumerate(self.evaluationResults):
+			prediction = self.predictions[index]
+			threshold = self.thresholds[index]
+
+			fixtureDate = datetime.datetime.strptime(self.fixtureDate[index], '%d/%m/%y')
+			
+			# 0 = Monday
+			prevWeekday = prevDate.weekday()
+			weekday = fixtureDate.weekday()
+			daysAhead = (fixtureDate - prevDate).days
+
+			homeTeam = self.homeTeam[index]
+			awayTeam = self.awayTeam[index]
+			homeFT = self.homeFT[index]
+			awayFT = self.awayFT[index]
+
+			bestOdds = self.bestOddsList[index]
+			worstOdds = self.worstOddsList[index]
+
+			if threshold[1] >= self.singleThreshold and result > 0.0:
+				totalWins[0] += 1.0
+				totalBestGain[0]  += (bestOdds-1.0)
+				totalWorstGain[0] += (worstOdds-1.0)
+				totalBets[0] += 1.0
+			elif threshold[1] > self.singleThreshold and result < 1.0:
+				totalLosses[0]   += 1.0
+				totalBestGain[0]  -= 1.0
+				totalWorstGain[0] -= 1.0
+				totalBets[0] += 1.0
+			else:
+				totalIgnored  += 1.0
+	
+		print 'Bets:{0}, Won:{1}, Lost:{2}, Ignored:{3}, BestGain:{4:.2f}, WorstGain:{5:.2f}'.format(totalBets[0], \
+			   totalWins[0], totalLosses[0], totalIgnored[0], totalBestGain[0], totalWorstGain[0])
 

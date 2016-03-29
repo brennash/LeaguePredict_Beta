@@ -64,11 +64,10 @@ def main(argv):
 	model = leaguePredictModel.getModel()
 	
 	# 3. Evaluate the performance of the model
+	evaluationConfig = getEvaluationConfig(configDict)
 	logger.error('Evaluation Features: %d',evaluationFeatureSet.size())
-	evaluation = ModelEvaluation(model, evaluationFeatureSet)
-#	evaluation.printSummary()
-		
-
+	evaluation = ModelEvaluation(model, evaluationFeatureSet, evaluationConfig)
+	evaluation.printSummary()
 
 def getFeatureSet(jsonHeader, configDict):
 	""" Gets the list of features associated with each provided data file. Takes as 
@@ -101,6 +100,10 @@ def getFeatureSet(jsonHeader, configDict):
 		else:
 			logger.error('Cannot read from file %s', path)
 	return resultSet
+
+def getEvaluationConfig(configDict):
+	evalutionDict = configDict['evaluation-config']
+	return evaluationDict
 
 
 if __name__ == "__main__":

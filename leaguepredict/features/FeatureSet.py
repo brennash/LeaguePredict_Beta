@@ -57,7 +57,9 @@ class FeatureSet:
 		"""
 		otherFeaturesList = featureSet.getFeaturesList()
 		self.featuresList = self.featuresList + otherFeaturesList
+		self.sortFeaturesByDate()
 		self.logger.info('Adding to FeatureSet, size: %d',len(self.featuresList))
+		
 							
 	def getFileDetails(self, filePath):
 		""" Gets the file list and parses it to 
@@ -88,12 +90,17 @@ class FeatureSet:
 				league.addFixture(fixture)
 			numFixtures += 1
 
+		self.sortFeaturesByDate()
 		self.logger.info('Initialized Season %s, League %s with %d fixtures',seasonCode, leagueCode, numFixtures)
-		
+	
+	def sortFeaturesByDate(self):
+		self.featuresList.sort(key=lambda x: x.getDate(), reverse=False)
+			
 	def getFeaturesData(self):
 		""" Returns the features data as a list of lists.
 		"""
 		resultList = []
+		#self.sortFeaturesByDate()
 		for index, feature in enumerate(self.featuresList):
 			featureData = feature.getFeatureData()
 			resultList.append(featureData)
