@@ -8,10 +8,51 @@
 		{"file":"data/1211/E0.csv"},
 		{"file":"data/1312/E0.csv"},
 		{"file":"data/1413/E0.csv"},
-		{"file":"data/1514/E0.csv"}
+		{"file":"data/1514/E0.csv"},
+		{"file":"data/0908/D1.csv"},
+		{"file":"data/1009/D1.csv"},
+		{"file":"data/1110/D1.csv"},
+		{"file":"data/1211/D1.csv"},
+		{"file":"data/1312/D1.csv"},
+		{"file":"data/1413/D1.csv"},
+		{"file":"data/1514/D1.csv"},	
+		{"file":"data/0908/F1.csv"},
+		{"file":"data/1009/F1.csv"},
+		{"file":"data/1110/F1.csv"},
+		{"file":"data/1211/F1.csv"},
+		{"file":"data/1312/F1.csv"},
+		{"file":"data/1413/F1.csv"},
+		{"file":"data/1514/F1.csv"},
+		{"file":"data/0908/SP1.csv"},
+		{"file":"data/1009/SP1.csv"},
+		{"file":"data/1110/SP1.csv"},
+		{"file":"data/1211/SP1.csv"},
+		{"file":"data/1312/SP1.csv"},
+		{"file":"data/1413/SP1.csv"},
+		{"file":"data/1514/SP1.csv"},
+		{"file":"data/0908/I1.csv"},
+		{"file":"data/1009/I1.csv"},
+		{"file":"data/1110/I1.csv"},
+		{"file":"data/1211/I1.csv"},
+		{"file":"data/1312/I1.csv"},
+		{"file":"data/1413/I1.csv"},
+		{"file":"data/1514/I1.csv"}	
 	],
 	"evaluation-data":
 	[
-		{"file":"data/1615/E0.csv"}
-	]
+		{"file":"data/1615/E0.csv"},
+		{"file":"data/1615/D1.csv"},
+		{"file":"data/1615/F1.csv"},	
+		{"file":"data/1615/SC0.csv"},	
+		{"file":"data/1615/SP1.csv"},	
+		{"file":"data/1615/I1.csv"},	
+		{"file":"data/1615/P1.csv"},	
+		{"file":"data/1615/T1.csv"}
+	],
+	"evaluation-config":
+	{
+		"verbose":true,
+		"single-threshold":0.75,
+		"accumulator-threshold":0.75
+	}
 }
