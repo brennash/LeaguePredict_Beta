@@ -31,13 +31,13 @@ class Test(unittest.TestCase):
 
 		self.assertEquals(team.getProbWin(), 1.0)
 
-	def test_Team_2(self):
+	def test_Team_ClearWin_1(self):
 		header = ["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR","HTHG","HTAG","HTR","HST","AST","HS","AS","WHH","B365A"]
-		values = ["E0","26/03/08","Bohs","Rowfus","4","1","H","3","1","H","4","4","10","5","1.1","1.2"]
+		values = ["E0","26/03/08","Bohs","Rowfus","4","1","H","3","0","H","4","4","10","5","1.1","1.2"]
 		fixture1 = Fixture(header, values)
 
 		header = ["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR","HTHG","HTAG","HTR","HST","AST","HS","AS","WHH","B365A"]
-		values = ["E0","27/03/08","Bohs","Rowfus","5","2","H","3","1","H","4","4","10","5","1.1","1.2"]
+		values = ["E0","27/03/08","Bohs","Rowfus","5","2","H","2","0","H","4","4","10","5","1.1","1.2"]
 		fixture2 = Fixture(header, values)
 
 		header = ["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR","HTHG","HTAG","HTR","HST","AST","HS","AS","WHH","B365A"]
@@ -56,13 +56,13 @@ class Test(unittest.TestCase):
 		self.assertEquals(team.getProbClearWin(), 0.5)
 
 
-	def test_Team_2(self):
+	def test_Team_ClearLoss_1(self):
 		header = ["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR","HTHG","HTAG","HTR","HST","AST","HS","AS","WHH","B365A"]
-		values = ["E0","26/03/08","Bohs","Rowfus","4","1","H","3","1","H","4","4","10","5","1.1","1.2"]
+		values = ["E0","26/03/08","Bohs","Rowfus","4","0","H","3","1","H","4","4","10","5","1.1","1.2"]
 		fixture1 = Fixture(header, values)
 
 		header = ["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR","HTHG","HTAG","HTR","HST","AST","HS","AS","WHH","B365A"]
-		values = ["E0","27/03/08","Bohs","Rowfus","5","2","H","3","1","H","4","4","10","5","1.1","1.2"]
+		values = ["E0","27/03/08","Bohs","Rowfus","2","0","H","3","1","H","4","4","10","5","1.1","1.2"]
 		fixture2 = Fixture(header, values)
 
 		header = ["Div","Date","HomeTeam","AwayTeam","FTHG","FTAG","FTR","HTHG","HTAG","HTR","HST","AST","HS","AS","WHH","B365A"]

@@ -71,10 +71,7 @@ class ModelEvaluation:
 
 			fixtureDate = datetime.datetime.strptime(self.fixtureDate[index], '%d/%m/%y')
 			
-			# 0 = Monday
-			prevWeekday = prevDate.weekday()
-			weekday = fixtureDate.weekday()
-			daysAhead = (fixtureDate - prevDate).days
+
 
 			homeTeam = self.homeTeam[index]
 			awayTeam = self.awayTeam[index]
