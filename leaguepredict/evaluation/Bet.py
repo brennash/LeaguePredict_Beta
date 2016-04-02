@@ -44,10 +44,16 @@ class Bet:
 		self.bestOdds.append(bestOdds)
 		self.worstOdds.append(worstOdds)	
 
-	def checkDate(self, dateStr):
+	def isValidDate(self, dateStr):
+		""" Return true if the date can be considered as part of a 
+		    weekly or weekend accumulator. Usually, there's two weekly 
+		    predictions, one for Monday to Thurday and the other from 
+		    Friday to Sunday. This function replicates this type of bi-weekly
+		    betting pattern.
+		"""
 		date = datetime.datetime.strptime(dateStr, '%d/%m/%y')
 		if len(self.resultList) == 0:
-			return True
+			return False
 		else:
 			prevDate = self.dateList[-1]
 			if date < prevDate :
@@ -105,33 +111,54 @@ class Bet:
 		elif not wonAllBets and lossTotal > 0:
 			print 'LOST BET {0:.2f},{1:.2f},{2},{3},{4},{5},{6}'.format(bestTotal, 
 				   worstTotal, (wonTotal+lossTotal), startDate, endDate, wonTotal, lossTotal)
-				   
 
-	def getOdds(self):
-		wonTotal = 0
-		lossTotal = 0
-		wonAllBets = True
-		bestTotal = 0.0
-		worstTotal = 0.0
-		startDate = self.dateList[0].strftime('%d/%m/%Y')
-		endDate = self.dateList[-1].strftime('%d/%m/%Y')
-	
+
+	def getTotalWins(self):
+		totalWins = 0
 		for index, result in enumerate(self.resultList):
 			betThreshold = self.threshold[index]
 			betThresholdLimit = self.configThreshold[index]
-			bestOdds = self.bestOdds[index]
-			worstOdds = self.worstOdds[index]
-			
-			if bestOdds == 0.0 or worstOdds == 0.0:
-				print self.homeTeam[index],self.awayTeam[index],bestOdds, worstOdds
-			#print betThreshold, type(betThreshold)
-			#print betThresholdLimit, type(betThresholdLimit)
-			
 			if betThreshold >= betThresholdLimit:
-				bestTotal += bestOdds
-				worstTotal += worstOdds
+				if result > 0.0:
+					totalWins += 1
+		return totalWins
+
+	def getTotalLosses(self):
+		totalLosses = 0
+		for index, result in enumerate(self.resultList):
+			betThreshold = self.threshold[index]
+			betThresholdLimit = self.configThreshold[index]
+			if betThreshold >= betThresholdLimit:
 				if result < 1.0:
-					lossTotal += 1
-					wonAllBets = False
-				else:
-					wonTotal += 1	
+					totalLosses += 1
+		return totalLosses
+
+	def getTotalBets(self):
+		totalBets = 0
+		for index, result in enumerate(self.resultList):
+			betThreshold = self.threshold[index]
+			betThresholdLimit = self.configThreshold[index]
+			if betThreshold >= betThresholdLimit:
+				totalBets += 1
+		return totalBets
+
+	def isWin(self):
+		for index, result in enumerate(self.resultList):
+			betThreshold = self.threshold[index]
+			betThresholdLimit = self.configThreshold[index]
+			if betThreshold >= betThresholdLimit:
+				if result < 1.0:
+					return False
+		return True
+
+	def getBestOdds(self):
+		oddsTotal = 0.0
+		for index, odds in enumerate(self.bestOdds):
+			oddsTotal += odds
+		return oddsTotal
+
+	def getWorstOdds(self):
+		oddsTotal = 0.0
+		for index, odds in enumerate(self.worstOdds):
+			oddsTotal += odds
+		return oddsTotal

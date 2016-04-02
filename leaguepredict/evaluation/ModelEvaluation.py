@@ -56,10 +56,12 @@ class ModelEvaluation:
 		self.accumBetsList = []
 
 
-	def printSummary(self):
+	def startEvaluation(self):
 		""" Calculates the accumulator and single bets for the predictions. 
 			The gain and the total are dependent on the config inputs. 
 		"""
+		
+		# Go through each prediction
 		for index, result in enumerate(self.evaluationResults):
 			result = self.evaluationResults[index]
 			fixtureDate = self.fixtureDates[index]
@@ -72,16 +74,26 @@ class ModelEvaluation:
 			bestOdds = self.bestOddsList[index]
 			worstOdds = self.worstOddsList[index]
 			
+			# For each prediction test it's valid
 			addedBet = False
 			for bet in self.accumBetsList:
-				if bet.checkDate(fixtureDate):
-					bet.add(result, fixtureDate, homeTeam, awayTeam, homeFT, awayFT, prediction, threshold, self.accumThreshold, bestOdds, worstOdds)
-					addedBet = True
-					break
-			
+				if bet.isValidDate(fixtureDate):
+					if threshold[1] >= self.accumThreshold:
+						bet.add(result, fixtureDate, homeTeam, awayTeam, homeFT, awayFT, prediction, threshold, self.accumThreshold, bestOdds, worstOdds)
+						addedBet = True
+						break
+			# Otherwise start an accumulator
 			if not addedBet:
-				bet = Bet(result, fixtureDate, homeTeam, awayTeam, homeFT, awayFT, prediction, threshold, self.accumThreshold, bestOdds, worstOdds)
-				self.accumBetsList.append(bet)
+				if threshold[1] >= self.accumThreshold:
+					bet = Bet(result, fixtureDate, homeTeam, awayTeam, homeFT, awayFT, prediction, threshold, self.accumThreshold, bestOdds, worstOdds)
+					self.accumBetsList.append(bet)
 		
+		odds = 0.0
 		for bet in self.accumBetsList:
-			bet.printBet()
+			if bet.isWin():
+				odds += bet.getBestOdds()
+				print 'WIN',odds
+			else:
+				odds -= 1.0
+				print 'LOSS',odds
+			
