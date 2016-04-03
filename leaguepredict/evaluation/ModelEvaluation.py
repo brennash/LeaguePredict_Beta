@@ -87,13 +87,16 @@ class ModelEvaluation:
 				if threshold[1] >= self.accumThreshold:
 					bet = Bet(result, fixtureDate, homeTeam, awayTeam, homeFT, awayFT, prediction, threshold, self.accumThreshold, bestOdds, worstOdds)
 					self.accumBetsList.append(bet)
-		
-		odds = 0.0
+
+		totalBestWins = 0.0
+		totalWorstWins = 0.0
 		for bet in self.accumBetsList:
+			bet.printDetails()
 			if bet.isWin():
-				odds += bet.getBestOdds()
-				print 'WIN',odds
+				totalBestWins += (bet.getBestOdds() - 1.0)
+				totalWorstWins += (bet.getWorstOdds() - 1.0)
 			else:
-				odds -= 1.0
-				print 'LOSS',odds
-			
+				totalBestWins -= 1.0
+				totalWorstWins -= 1.0
+		
+		print '\nWINNINGS BEST:{0:.3f}, WORST:{1:.3f}'.format(totalBestWins, totalWorstWins)

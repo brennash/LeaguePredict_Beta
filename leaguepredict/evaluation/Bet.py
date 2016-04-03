@@ -154,11 +154,41 @@ class Bet:
 	def getBestOdds(self):
 		oddsTotal = 0.0
 		for index, odds in enumerate(self.bestOdds):
-			oddsTotal += odds
+			if index == 0:
+				oddsTotal = odds
+			else:
+				oddsTotal = oddsTotal*odds		
 		return oddsTotal
 
 	def getWorstOdds(self):
 		oddsTotal = 0.0
 		for index, odds in enumerate(self.worstOdds):
-			oddsTotal += odds
+			if index == 0:
+				oddsTotal = odds
+			else:
+				oddsTotal = oddsTotal*odds
 		return oddsTotal
+		
+	def printDetails(self):
+		totalBestOdds = self.getBestOdds()
+		totalWorstOdds = self.getWorstOdds()
+		winResult = self.isWin()
+		totalBets = self.getTotalBets()
+		totalWins = self.getTotalWins()
+		totalLosses = self.getTotalLosses()
+		
+		if winResult:
+			print '\n=== WIN: {0}/{1}, BEST: {2:.3f}, WORST: {3:.3f} ==='.format(totalWins, totalBets, totalBestOdds, totalWorstOdds)
+		else:
+			print '\n=== LOST: {0}/{1}, BEST: {2:.3f}, WORST: {3:.3f} ==='.format(totalLosses, totalBets, totalBestOdds, totalWorstOdds)
+		
+		for index, result in enumerate(self.resultList):
+			fixtureDate = self.dateList[index].strftime('%Y-%m-%d')
+			homeTeam = self.homeTeam[index]
+			homeFT = self.homeFT[index]
+			awayTeam = self.awayTeam[index]
+			awayFT = self.awayFT[index]
+			threshold = self.threshold[index]
+			bestOdds = float(self.bestOdds[index])
+			worstOdds = float(self.worstOdds[index])
+			print '{0}, {1} {2}-{3} {4} \t({5:.3f}), {6:.2f}, {7:.2f}'.format(fixtureDate, homeTeam, homeFT, awayFT, awayTeam, threshold, bestOdds, worstOdds)
